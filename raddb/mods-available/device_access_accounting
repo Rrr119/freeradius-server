@@ -1,0 +1,11 @@
+exec device_access_accounting {
+	wait = no
+
+	# Install scripts/device-access/device_access.py as
+	# /usr/local/sbin/device-accessctl, or override this path in a local
+	# config file.  The accounting subcommand reads the RADIUS pairs from
+	# the environment created by input_pairs.
+	program = "/usr/local/sbin/device-accessctl --home /var/lib/freeradius/device-access accounting"
+	input_pairs = request
+	shell_escape = yes
+}

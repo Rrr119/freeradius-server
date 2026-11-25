@@ -1,0 +1,4 @@
+# Local, non-wire attributes used by the 802.1X device-access policy.
+DEFINE Device-Bound-User		string
+DEFINE Device-Cert-Serial		string
+DEFINE Device-Access-Reason		string

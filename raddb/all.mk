@@ -4,12 +4,13 @@
 LOCAL_FILES :=		clients.conf dictionary \
 			radiusd.conf trigger.conf panic.gdb proxy.conf
 
-DEFAULT_SITES :=	default inner-tunnel proxy
+DEFAULT_SITES :=	default inner-tunnel proxy tls-session device-crl
 LOCAL_SITES :=		$(addprefix raddb/sites-enabled/,$(DEFAULT_SITES))
 
-DEFAULT_MODULES :=	always attr_filter cache_eap chap client \
-			delay detail detail.log digest eap \
-			eap_inner echo escape exec files linelog \
+DEFAULT_MODULES :=	always attr_filter cache_eap cache_tls chap client \
+			delay detail detail.log device_access_accounting \
+			device_access_devices device_crl \
+			digest eap eap_inner echo escape exec files linelog \
 			mschap ntlm_auth pap passwd \
 			stats unix unpack utf8
 

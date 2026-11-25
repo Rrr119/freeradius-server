@@ -1,0 +1,77 @@
+#
+# Device certificate + user credential binding for 802.1X.
+#
+# Flow:
+#   1. TLS validation (chain, time, CRL/OCSP) runs before this policy.
+#   2. device_access_certificate maps the leaf certificate CN to its owner.
+#   3. device_access_user_binding requires the tunneled username to match.
+#
+
+device_access_certificate {
+	if (!session-state.TLS-Certificate[0]) {
+		request += {
+			Module-Failure-Message = "Device certificate is required"
+		}
+		reject
+	}
+
+	#
+	#  Native serial-number CRL check.  The device-crl virtual server
+	#  supplies the locally published CRL; OCSP can be added here as an
+	#  additional check.
+	#
+	device_crl
+
+	map device_access_devices "%{session-state.TLS-Certificate[0].Common-Name}" {
+		control.Device-Bound-User := 'user'
+		control.Device-Cert-Serial := 'serial'
+	}
+
+	if (!control.Device-Bound-User) {
+		request += {
+			Module-Failure-Message = "Device certificate is not registered"
+		}
+		reject
+	}
+
+	if (control.Device-Cert-Serial &&
+	    (%str.lower(control.Device-Cert-Serial) != %hex(session-state.TLS-Certificate.Serial))) {
+		request += {
+			Module-Failure-Message = "Device certificate serial does not match registry"
+		}
+		reject
+	}
+
+	session-state.Device-Bound-User := control.Device-Bound-User
+	session-state.Device-Cert-Serial := control.Device-Cert-Serial
+	ok
+}
+
+device_access_user_binding {
+	if (!outer.session-state.TLS-Certificate[0]) {
+		request += {
+			Module-Failure-Message = "Outer device certificate is required"
+		}
+		reject
+	}
+
+	if (!outer.session-state.Device-Bound-User) {
+		map device_access_devices "%{outer.session-state.TLS-Certificate[0].Common-Name}" {
+			control.Device-Bound-User := 'user'
+		}
+
+		if (!control.Device-Bound-User) {
+			reject
+		}
+		outer.session-state.Device-Bound-User := control.Device-Bound-User
+	}
+
+	if (outer.session-state.Device-Bound-User != User-Name) {
+		request += {
+			Module-Failure-Message = "Device certificate is bound to another user"
+		}
+		reject
+	}
+
+	ok
+}

@@ -1,0 +1,4 @@
+crl device_crl {
+	virtual_server = device-crl
+	retry_delay = 5s
+}

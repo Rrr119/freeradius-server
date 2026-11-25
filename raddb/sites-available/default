@@ -1292,6 +1292,13 @@ recv Accounting-Request {
 	#  Read the 'accounting' file.
 	#
 	files_accounting
+
+	#
+	#  Maintain the device-access session table used by revocation.
+	#  The leading '-' keeps upgrades safe before the exec instance is
+	#  enabled/installed.
+	#
+	-device_access_accounting
 }
 
 #

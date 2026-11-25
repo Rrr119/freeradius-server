@@ -1,0 +1,20 @@
+csv device_access_devices {
+	filename = ${modconfdir}/csv/device_access_devices.csv
+	delimiter = ","
+	header = yes
+	index_field = cn
+
+	# The map is normally invoked with an explicit certificate CN key:
+	#
+	# map device_access_devices "%{session-state.TLS-Certificate.Common-Name}" {
+	#     control.Device-Bound-User := 'user'
+	# }
+	#
+	# A default key keeps the module runnable when listed directly.
+	key = &session-state.TLS-Certificate.Common-Name
+
+	update control {
+		Device-Bound-User := 'user'
+		Device-Cert-Serial := 'serial'
+	}
+}

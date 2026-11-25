@@ -79,6 +79,12 @@ server tls-session {
 ##		crl
 
 		#
+		#  Require a registered device certificate and bind its CN to
+		#  the permitted user.  Revocation is checked by device_crl.
+		#
+		device_access_certificate
+
+		#
 		#  This is a convenient place to call LDAP, for example, when using
 		#  EAP-TLS, as it will only be called once, after all certificates
 		#  as part of the EAP-TLS challenge process have been verified.

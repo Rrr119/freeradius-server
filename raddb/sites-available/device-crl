@@ -1,0 +1,27 @@
+server device-crl {
+	namespace = crl
+
+	crl {
+		ca_file = ${cadir}/rsa/ca.pem
+		ca_path = ${cadir}
+		early_refresh = 1h
+	}
+
+	recv CRL-Fetch {
+		if (%file.exists("${certdir}/device-access/ca.crl")) {
+			reply.CRL-Data = %file.cat("${certdir}/device-access/ca.crl", 4194304)
+			ok
+			return
+		}
+
+		reject
+	}
+
+	send Fetch-OK {
+		ok
+	}
+
+	send Fetch-Fail {
+		ok
+	}
+}
